@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHASING THE DROPLETS - Interactive Infographic</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #e8f5e9;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #7cb342 0%, #9ccc65 100%);
+            color: black;
+            padding: 30px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab-btn {
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid #7cb342;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #7cb342;
+            transition: all 0.3s;
+            font-size: 0.95em;
+        }
+        
+        .tab-btn:hover {
+            background: #c6ff00;
+            transform: translateY(-2px);
+        }
+        
+        .tab-btn.active {
+            background: #7cb342;
+            color: white;
+            border-color: #7cb342;
+        }
+        
+        .content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
+        .content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            color: #7cb342;
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        /* LOCATIONS SECTION */
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .location-card {
+            background: linear-gradient(135deg, #c6ff00 0%, #9ccc65 100%);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .location-card h3 {
+            color: #2d3436;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+        
+        .location-card p {
+            color: #2d3436;
+            font-size: 0.9em;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        
+        .location-card .gps {
+            font-size: 0.85em;
+            color: #1b5e20;
+            font-weight: bold;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 2px solid rgba(0,0,0,0.1);
+        }
+        
+        /* CHALLENGES & SOLUTIONS */
+        .challenges-container {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .challenge-item {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            background: #f1f8e9;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #7cb342;
+        }
+        
+        .challenge-image {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #c6ff00, #9ccc65);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            flex-shrink: 0;
+        }
+        
+        .challenge-text h3 {
+            color: #7cb342;
+            margin-bottom: 8px;
+        }
+        
+        .challenge-text p {
+            color: #2d3436;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+        
+        /* CHARTS */
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 40px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .chart-title {
+            color: #7cb342;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        /* CULTURAL BELIEFS */
+        .beliefs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .belief-card {
+            background: linear-gradient(135deg, #c6ff00 0%, #9ccc65 100%);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .belief-card h3 {
+            color: #2d3436;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+        
+        .belief-card p {
+            color: #2d3436;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .belief-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        /* ECOLOGICAL ROLES */
+        .roles-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .role-pair {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .role-box {
+            background: linear-gradient(135deg, #c6ff00 0%, #9ccc65 100%);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .role-box h4 {
+            color: #2d3436;
+            margin-bottom: 10px;
+            font-size: 1em;
+            font-weight: bold;
+        }
+        
+        .role-box p {
+            color: #2d3436;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .arrow {
+            text-align: center;
+            color: #7cb342;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .role-pair {
+                grid-template-columns: 1fr;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+            
+            .challenge-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌧️ CHASING THE DROPLETS</h1>
+        <p>Following the path where every drop shapes a story</p>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('locations')">9 Locations</button>
+        <button class="tab-btn" onclick="switchTab('challenges')">Challenges & Solutions</button>
+        <button class="tab-btn" onclick="switchTab('data')">Data Charts</button>
+        <button class="tab-btn" onclick="switchTab('beliefs')">Cultural Beliefs</button>
+        <button class="tab-btn" onclick="switchTab('roles')">Ecological Roles</button>
+    </div>
+    
+    <div class="container">
+        
+        <!-- LOCATIONS TAB -->
+        <div id="locations" class="content active">
+            <h2 class="section-title">🗺️ The Nine Water Wonders: Quick Overview</h2>
+            <div class="locations-grid">
+                <div class="location-card">
+                    <h3>🏖️ Miramar Beach</h3>
+                    <p><strong>Location:</strong> Goa</p>
+                    <p><strong>Type:</strong> Coastal Beach</p>
+                    <p><strong>Rainfall:</strong> 3,000mm/year</p>
+                    <p><strong>Significance:</strong> Where water meets ocean</p>
+                    <div class="gps">GPS: 15.49°N, 73.83°E</div>
+                </div>
+                
+                <div class="location-card">
+                    <h3>💦 Dudhsagar Falls</h3>
+                    <p><strong>Location:</strong> Goa</p>
+                    <p><strong>Type:</strong> Waterfall</p>
+                    <p><strong>Height:</strong> 600m</p>
+                    <p><strong>Significance:</strong> Seasonal waterfall</p>
+                    <div class="gps">GPS: 15.31°N, 73.99°E</div>
+                </div>
+                
+                <div class="location-card">
+                    <h3>🏔️ Munnar</h3>
+                    <p><strong>Location:</strong> Kerala</p>
+                    <p><strong>Type:</strong> Mountains</p>
+                    <p><strong>Rainfall:</strong> 4,500mm/year</p>
+                    <p><strong>Significance:</strong> Water source for Kerala</p>
+                    <div class="gps">GPS: 10.59°N, 76.71°E</div>
+                </div>
+                
+                <div class="location-card">
+                    <h3>🌸 Kaas Plateau</h3>
+                    <p><strong>Location:</strong> Maharashtra</p>
+                    <p><strong>Type:</strong> Plateau</p>
+                    <p><strong>Rainfall:</strong> 2,000mm/year</p>
+                    <p><strong>Significance:</strong> Seasonal water bodies</p>
+                    <div class="gps">GPS: 17.80°N, 73.81°E</div>
+                </div>
+                
+                <div class="location-card">
+                    <h3>🌊 Lonar Crater Lake</h3>
+                    <p><strong>Location:</strong> Maharashtra</p>
+                    <p><strong>Type:</strong> Crater Lake</p>
+                    <p><strong>Rainfall:</strong> 1,500mm/year</p>
+                    <p><strong>Significance:</strong> Unique geology</p>
+                    <div class="gps">GPS: 19.97°N, 76.51°E</div>
+                </div>
+                
+                <div class="location-card">
+                    <h3>💧 Nohkalikai Falls</h3>
+                    <p><strong>Location:</strong> Meghalaya</p>
+                    <p><strong>Type:</strong> Waterfall</p>
+                    <p><strong>Height:</strong> 335m (Highest in India)</p>
+                    <p><strong>Rainfall:</strong> 11,000mm/year</p>
+                    <div class="gps">GPS: 25.27°N, 91.91°E</div>
+                </div>
+                
+                <div class="location-card">
+                    <h3>☔ Mawsynram</h3>
+                    <p><strong>Location:</strong> Meghalaya</p>
+                    <p><strong>Type:</strong> Rainfall Region</p>
+                    <p><strong>Rainfall:</strong> 11,873mm/year (HIGHEST)</p>
+                    <p><strong>Significance:</strong> Highest rainfall on Earth</p>
+                    <div class="gps">GPS: 25.30°N, 91.91°E</div>
+                </div>
+                
+                <div class="location-card">
+                    <h3>🏞️ Dal Lake</h3>
+                    <p><strong>Location:</strong> Kashmir</p>
+                    <p><strong>Type:</strong> Mountain Lake</p>
+                    <p><strong>Rainfall:</strong> 1,000mm/year</p>
+                    <p><strong>Significance:</strong> Cultural & spiritual</p>
+                    <div class="gps">GPS: 34.08°N, 75.57°E</div>
+                </div>
+                
+                <div class="location-card">
+                    <h3>❄️ Pangong Tso</h3>
+                    <p><strong>Location:</strong> Ladakh</p>
+                    <p><strong>Type:</strong> High Altitude Lake</p>
+                    <p><strong>Altitude:</strong> 4,250m</p>
+                    <p><strong>Rainfall:</strong> 100mm/year</p>
+                    <div class="gps">GPS: 33.79°N, 78.55°E</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CHALLENGES & SOLUTIONS TAB -->
+        <div id="challenges" class="content">
+            <h2 class="section-title">🚨 Challenges & Solutions</h2>
+            <div class="challenges-container">
+                <div class="challenge-item">
+                    <div class="challenge-image">🏖️</div>
+                    <div class="challenge-text">
+                        <h3>Miramar Beach - Coastal Erosion & Pollution</h3>
+                        <p><strong>Challenge:</strong> Coastal erosion and plastic pollution are destroying marine habitats and tourism.</p>
+                        <p><strong>Solution:</strong> Marine sanctuary designation with beach cleanup drives has reduced plastic by 80%.</p>
+                    </div>
+                </div>
+                
+                <div class="challenge-item">
+                    <div class="challenge-image">💦</div>
+                    <div class="challenge-text">
+                        <h3>Dudhsagar Falls - Water Diversion</h3>
+                        <p><strong>Challenge:</strong> Water diversion to dams causes the falls to run dry 70% of the year.</p>
+                        <p><strong>Solution:</strong> Regulated water release agreements with dam authorities now keep falls visible year-round.</p>
+                    </div>
+                </div>
+                
+                <div class="challenge-item">
+                    <div class="challenge-image">🏔️</div>
+                    <div class="challenge-text">
+                        <h3>Munnar - Deforestation</h3>
+                        <p><strong>Challenge:</strong> Deforestation for tea plantations has destroyed 75% of original forest cover.</p>
+                        <p><strong>Solution:</strong> Agroforestry program converting tea estates to mixed farming with native trees is recovering biodiversity.</p>
+                    </div>
+                </div>
+                
+                <div class="challenge-item">
+                    <div class="challenge-image">🌸</div>
+                    <div class="challenge-text">
+                        <h3>Kaas Plateau - Flower Poaching</h3>
+                        <p><strong>Challenge:</strong> Illegal flower poaching has endangered 30+ plant species in just 5 years.</p>
+                        <p><strong>Solution:</strong> UNESCO World Heritage Site protection with anti-poaching patrols has reduced poaching by 90%.</p>
+                    </div>
+                </div>
+                
+                <div class="challenge-item">
+                    <div class="challenge-image">🌊</div>
+                    <div class="challenge-text">
+                        <h3>Lonar Crater Lake - Salinity Change</h3>
+                        <p><strong>Challenge:</strong> Water is becoming increasingly saline, changing the unique alkaline ecosystem.</p>
+                        <p><strong>Solution:</strong> Scientific research partnerships are studying how to protect and preserve the unique salt-adapted species.</p>
+                    </div>
+                </div>
+                
+                <div class="challenge-item">
+                    <div class="challenge-image">💧</div>
+                    <div class="challenge-text">
+                        <h3>Nohkalikai Falls - Water Diversion & Deforestation</h3>
+                        <p><strong>Challenge:</strong> Water diversion to power plants and deforestation have reduced water flow by 70%.</p>
+                        <p><strong>Solution:</strong> Water flow management agreement and forest protection zones are restoring habitat and maintaining falls visibility.</p>
+                    </div>
+                </div>
+                
+                <div class="challenge-item">
+                    <div class="challenge-image">☔</div>
+                    <div class="challenge-text">
+                        <h3>Mawsynram - Landslides</h3>
+                        <p><strong>Challenge:</strong> Extreme rainfall (11,873mm/year) causes constant landslides killing dozens yearly.</p>
+                        <p><strong>Solution:</strong> Early warning system with landslide monitoring sensors has eliminated landslide deaths in past 3 years.</p>
+                    </div>
+                </div>
+                
+                <div class="challenge-item">
+                    <div class="challenge-image">🏞️</div>
+                    <div class="challenge-text">
+                        <h3>Dal Lake - Pollution & Weed Invasion</h3>
+                        <p><strong>Challenge:</strong> Pollution and aquatic weeds (water hyacinth) cover 30% of the lake, killing native species.</p>
+                        <p><strong>Solution:</strong> Comprehensive restoration project with sewage treatment plants and weed removal has improved water quality.</p>
+                    </div>
+                </div>
+                
+                <div class="challenge-item">
+                    <div class="challenge-image">❄️</div>
+                    <div class="challenge-text">
+                        <h3>Pangong Tso - Climate Warming</h3>
+                        <p><strong>Challenge:</strong> Climate warming causes ice to melt earlier and water levels to drop unpredictably.</p>
+                        <p><strong>Solution:</strong> National Park designation with climate monitoring stations help track changes and protect breeding habitats.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DATA CHARTS TAB -->
+        <div id="data" class="content">
+            <h2 class="section-title">📊 Data Visualizations</h2>
+            
+            <div class="chart-container">
+                <div class="chart-title">Rainfall by Location (Annual)</div>
+                <canvas id="rainfallChart"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">Monsoon vs Dry Season Comparison</div>
+                <canvas id="seasonChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- CULTURAL BELIEFS TAB -->
+        <div id="beliefs" class="content">
+            <h2 class="section-title">🙏 Cultural Beliefs + Water Culture</h2>
+            <div class="beliefs-grid">
+                <div class="belief-card">
+                    <h3>🏖️ Miramar Beach</h3>
+                    <p>Fishermen perform monsoon blessing rituals, offering prayers to ocean goddess for calm waters & abundant catch.</p>
+                </div>
+                
+                <div class="belief-card">
+                    <h3>💦 Dudhsagar Falls</h3>
+                    <p>Waterfall's milky appearance believed to be goddess's divine manifestation; pilgrims bathe for spiritual purification.</p>
+                </div>
+                
+                <div class="belief-card">
+                    <h3>🏔️ Munnar</h3>
+                    <p>Mountain streams revered as "tears of gods" blessing fertility; communities perform water blessing ceremonies.</p>
+                </div>
+                
+                <div class="belief-card">
+                    <h3>🌸 Kaas Plateau</h3>
+                    <p>Monsoon flowers celebrated as goddess's gratitude for conservation; annual festival honors rainfall abundance.</p>
+                </div>
+                
+                <div class="belief-card">
+                    <h3>🌊 Lonar Crater Lake</h3>
+                    <p>Lake water has divine meteor blessing; people perform healing rituals by bathing for spiritual renewal.</p>
+                </div>
+                
+                <div class="belief-card">
+                    <h3>💧 Nohkalikai Falls</h3>
+                    <p>Khasi belief: waterfall is goddess's power made visible; living root bridges show water-harmony philosophy.</p>
+                </div>
+                
+                <div class="belief-card">
+                    <h3>☔ Mawsynram</h3>
+                    <p>Khasi people believe extreme rainfall is divine blessing; traditional ceremonies thank monsoon goddess.</p>
+                </div>
+                
+                <div class="belief-card">
+                    <h3>🏞️ Dal Lake</h3>
+                    <p>All religions use sacred water for spiritual purification; floating gardens represent sustainable water-harmony traditions.</p>
+                </div>
+                
+                <div class="belief-card">
+                    <h3>❄️ Pangong Tso</h3>
+                    <p>Tibetan belief: lake contains heaven's blessing at extreme altitude; Changpa nomads lived sustainably with sacred lake.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ECOLOGICAL ROLES TAB -->
+        <div id="roles" class="content">
+            <h2 class="section-title">🌿 Ecological Roles (Water/Rain)</h2>
+            <div class="roles-flow">
+                <div class="role-pair">
+                    <div class="role-box">
+                        <h4>🏖️ Dudhsagar Falls</h4>
+                        <p>Water demonstrates water power and feeds downstream irrigation systems for 200,000+ farmers.</p>
+                    </div>
+                    <div class="arrow">↔</div>
+                    <div class="role-box">
+                        <h4>🏖️ Miramar Beach</h4>
+                        <p>Coastal waters regulate monsoon patterns through evaporation cycles.</p>
+                    </div>
+                </div>
+                
+                <div class="role-pair">
+                    <div class="role-box">
+                        <h4>🌊 Lonar Crater Lake</h4>
+                        <p>Porous crater filters monsoon rainwater underground for wells.</p>
+                    </div>
+                    <div class="arrow">↔</div>
+                    <div class="role-box">
+                        <h4>🌸 Kaas Plateau</h4>
+                        <p>Seasonal ponds created by monsoon recharge wells during dry season.</p>
+                    </div>
+                </div>
+                
+                <div class="role-pair">
+                    <div class="role-box">
+                        <h4>🏔️ Munnar</h4>
+                        <p>High altitude captures monsoon clouds for 45 million people.</p>
+                    </div>
+                    <div class="arrow">↔</div>
+                    <div class="role-box">
+                        <h4>☔ Mawsynram</h4>
+                        <p>Highest rainfall feeds Brahmaputra river (150 million people).</p>
+                    </div>
+                </div>
+                
+                <div class="role-pair">
+                    <div class="role-box">
+                        <h4>💧 Nohkalikai Falls</h4>
+                        <p>Extreme rainfall creates water system for entire region.</p>
+                    </div>
+                    <div class="arrow">↔</div>
+                    <div class="role-box">
+                        <h4>❄️ Pangong Tso</h4>
+                        <p>Saline lake shows altitude monsoon patterns and climate change.</p>
+                    </div>
+                </div>
+                
+                <div class="role-pair" style="grid-template-columns: 1fr;">
+                    <div class="role-box">
+                        <h4>🏞️ Dal Lake</h4>
+                        <p>Snowmelt combined with monsoon rainfall maintains year-round water supply for 1 million+ people.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>MADE BY PAARINI JAIN S3-I</p>
+    </div>
+    
+    <script>
+        function switchTab(tabName) {
+            // Hide all content
+            const contents = document.querySelectorAll('.content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Initialize charts if data tab
+            if (tabName === 'data') {
+                setTimeout(initializeCharts, 100);
+            }
+        }
+        
+        function initializeCharts() {
+            // Chart 1: Rainfall by Location
+            const rainfallCtx = document.getElementById('rainfallChart');
+            if (rainfallCtx && !rainfallCtx.chart) {
+                rainfallCtx.chart = new Chart(rainfallCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Mawsynram', 'Nohkalikai', 'Munnar', 'Miramar', 'Dudhsagar', 'Kaas', 'Lonar', 'Dal Lake', 'Pangong Tso'],
+                        datasets: [{
+                            label: 'Annual Rainfall (mm)',
+                            data: [11873, 11000, 4500, 3000, 2200, 2000, 1500, 1000, 100],
+                            backgroundColor: [
+                                '#7cb342',
+                                '#9ccc65',
+                                '#c6ff00',
+                                '#aed581',
+                                '#9ccc65',
+                                '#8bc34a',
+                                '#689f38',
+                                '#558b2f',
+                                '#33691e'
+                            ],
+                            borderColor: '#558b2f',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                labels: { font: { size: 14 } }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { font: { size: 12 } }
+                            },
+                            x: {
+                                ticks: { font: { size: 11 } }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Chart 2: Monsoon vs Dry Season
+            const seasonCtx = document.getElementById('seasonChart');
+            if (seasonCtx && !seasonCtx.chart) {
+                seasonCtx.chart = new Chart(seasonCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Mawsynram', 'Nohkalikai', 'Munnar', 'Miramar', 'Dudhsagar', 'Kaas', 'Lonar', 'Dal Lake', 'Pangong Tso'],
+                        datasets: [
+                            {
+                                label: 'Monsoon (June-Sept) mm',
+                                data: [9500, 9000, 3800, 2500, 1800, 1600, 1200, 800, 30],
+                                backgroundColor: '#c6ff00',
+                                borderColor: '#7cb342',
+                                borderWidth: 2
+                            },
+                            {
+                                label: 'Dry (Oct-May) mm',
+                                data: [2373, 2000, 700, 500, 400, 400, 300, 200, 70],
+                                backgroundColor: '#9ccc65',
+                                borderColor: '#558b2f',
+                                borderWidth: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                labels: { font: { size: 14 } }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { font: { size: 12 } }
+                            },
+                            x: {
+                                ticks: { font: { size: 11 } }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
